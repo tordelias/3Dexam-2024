@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="3Dexam.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Math_class.cpp" />
     <ClCompile Include="Resources\Camera\Camera.cpp" />
     <ClCompile Include="Resources\imported\Construct.cpp" />
     <ClCompile Include="Resources\imported\LSM.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="includes\GLFW\glfw3native.h" />
     <ClInclude Include="includes\glm\mat4x3.hpp" />
     <ClInclude Include="includes\KHR\khrplatform.h" />
+    <ClInclude Include="Math_class.h" />
     <ClInclude Include="Resources\Camera\Camera.h" />
     <ClInclude Include="Resources\imported\Construct.h" />
     <ClInclude Include="Resources\imported\LSM.h" />

@@ -3,6 +3,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "../../Math_class.h"
 //Code is from: tordelias/Compulsory-3/OpenGlsession0/Construct.h
 //Github Link: https://github.com/tordelias/Compulsory-3.git
 struct Vertex

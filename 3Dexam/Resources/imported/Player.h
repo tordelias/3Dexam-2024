@@ -32,47 +32,39 @@ public:
 	std::vector<Vertex> mVertecies;
 	glm::vec3 position;
 
-	Player(float scale, const glm::vec3& initialPosition, float red = 1.0f, float green = 1.0f, float blue = 1.0f, float figure = 1.f)
+	Player(float scale, const glm::vec3& initialPosition, float red = 1.0f, float green = 1.0f, float blue = 1.0f, int figure = 1)
 		: a(scale), position(initialPosition), velocity(glm::vec3(0.0f)), r(red), g(green), b(blue), VBO1()
 	{
 		Construct con;
 
-		//Cube
-		if (figure == 1)
+		switch (figure)
 		{
+		case 1: 
 			mVertecies = con.Cube(glm::vec3(red, green, blue));
-
-		}
-		else if (figure == 2)
-		{
+			break;
+		case 2: 
 			mVertecies = con.Table(glm::vec3(red, green, blue));
-		}
-
-		else if (figure == 3)
-		{
+			break;
+		case 3:
 			mVertecies = con.House(glm::vec3(red, green, blue));
+			break;
+		case 4:
+			mVertecies = con.NotAPlane(glm::vec3(red, green, blue));
+		case 5:
+			mVertecies = con.Triangle(glm::vec3(red, green, blue));
+			break;
+		case 6: 
+			mVertecies = con.Square(glm::vec3(red, green, blue));
+			break; 
+		case 7: 
+			mVertecies = con.Line(glm::vec3(red, green, blue));
+			break;
+		default:
+			mVertecies = con.CubeNoTexture(glm::vec3(red, green, blue));
+			break;
 		}
 
-		else if (figure == 4)
-		{
-			mVertecies = con.NotAPlane(glm::vec3(red, green, blue));
-		}
-		else if (figure == 5)
-		{
-			mVertecies = con.Triangle(glm::vec3(red, green, blue));
-		}
-		else if (figure == 6)
-		{
-			mVertecies = con.Square(glm::vec3(red, green, blue));
-		}
-		else if (figure == 7)
-		{
-			mVertecies = con.Line(glm::vec3(red, green, blue));
-		}
-		else
-		{
-			mVertecies = con.CubeNoTexture(glm::vec3(red, green, blue));
-		}
+
 		VAO1.Bind();
 		VBO1.Bind();
 		glBufferData(GL_ARRAY_BUFFER, mVertecies.size() * sizeof(Vertex), mVertecies.data(), GL_STATIC_DRAW);
@@ -86,12 +78,13 @@ public:
 		sphere_radius = a; 
 
 	}
-	float GetA();
+
 	/*std::vector<GLfloat> getFlattenedVertices() const;*/
 	/*void ConstructVBO(std::vector<GLfloat> flattenedVertices, bool update);*/
 	void DeleteVBOANDVAO();
 	void UnbindVAO();
 	void BindVAO();
+	float GetA();
 	void UpdateVertices(float Xspeed, float Yspeed, float Zspeed, glm::vec3 velocity);
 	VBO GetVBO();
 	void inputs(GLFWwindow* window);
@@ -101,10 +94,9 @@ public:
 	bool CheckCollision( Player& otherCube);
 	
 
-
 	glm::vec3 calculateBarycentricCoordinates( glm::vec3& cpoint, bool ground);
 
-public:
+private:
 	float a{ 1.0f };
 	double xvalue = 0;
 	double xspeed = 0.001;

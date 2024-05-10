@@ -356,9 +356,22 @@ std::vector<Vertex> Construct::Square(glm::vec3 Color)
 
 std::vector<Vertex> Construct::Line(glm::vec3 Color)
 {
+    Math_class math; 
     std::vector<Vertex> LineArray;
     glm::vec3 sizeXYZ = glm::vec3(1.0f, 1.0f, 1.0f);
-    //draw graph thing
+    glm::vec4 points = { 0, 1, 2, 3 };
+    glm::vec4 y_cords = { 0, 5, -4, 9 };
+    float num_y; 
+    glm::vec<4, double> X = math.CubicInterpolation(points, y_cords);
+    Vertex v0; 
+    for (float i = 0; i < 10; i += 0.05)
+    {
+        num_y = ((X.x * powf(i,3)) + (X.y * powf(i, 2)) + (X.z * i) + X.w);
+        v0 = { i, num_y, 0, Color.x, Color.y, Color.z }; 
 
+        std::cout << v0.x << ", " << v0.y << std::endl;
+        LineArray.push_back(v0); 
+    }
+    std::cout << X.x << ", " << X.y << ", " << X.z << ", " << X.w << std::endl;
     return LineArray;
 }

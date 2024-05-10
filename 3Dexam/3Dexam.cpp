@@ -61,12 +61,11 @@ int main()
     // ------------------------------------------------------------------
 
 
-
     glEnable(GL_DEPTH_TEST);
     //glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
     //my objects
-    Player myPlayer(1.0f, glm::vec3(0, 0, 20), 0.f, 0.0f, 1.f, 19);
+    Player myPlayer(1.0f, glm::vec3(0, 0, 20), 0.f, 0.0f, 1.f, 7);
 
     //textures
     Texture texture1("Resources/Texture/textures/cool_Image.jpg",0, shaderProgram);
@@ -102,7 +101,7 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(viewproj * model));
         myPlayer.BindVAO();
         myPlayer.GetVBO().Bind();
-        glDrawArrays(GL_TRIANGLES, 0, myPlayer.mVertecies.size());
+        glDrawArrays(GL_LINE_STRIP, 0, myPlayer.mVertecies.size());
         myPlayer.UnbindVAO();
         texture1.UnbindTexture();
 
