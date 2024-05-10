@@ -11,8 +11,7 @@ class Texture
 public:
 	unsigned int texture;
 
-	Texture(const char* texture1, int num, Shader shaderProgram);
+	Texture(const char* texture1, Shader shaderProgram);
 
-	void UnbindTexture();
 };
 
