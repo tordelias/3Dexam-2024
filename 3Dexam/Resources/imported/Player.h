@@ -5,12 +5,13 @@
 #include <array>
 #include <string>
 #include <glm/glm.hpp>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include<GLFW/glfw3.h>
 #include <cmath>
 #include "Construct.h"
+#include "../../Math_class.h"
+
 
 //Code is from: tordelias/Compulsory-3/OpenGlsession0/player.h
 //Github Link: https://github.com/tordelias/Compulsory-3.git
@@ -21,12 +22,14 @@ class Player {
 private:
 
 	float sphere_radius = 0;
+	float speedMagnifier = 0.1f;
 	bool move = true;
 	float size1 = 1.f;
 	float r, g, b;
 	VAO VAO1;
 	VBO VBO1;
 	glm::vec3 velocity;
+	int sign = 1.f; 
 
 public:
 	std::vector<Vertex> mVertecies;
@@ -36,7 +39,6 @@ public:
 		: a(scale), position(initialPosition), velocity(glm::vec3(0.0f)), r(red), g(green), b(blue), VBO1()
 	{
 		Construct con;
-
 		switch (figure)
 		{
 		case 1: 
@@ -57,7 +59,13 @@ public:
 			mVertecies = con.Square(glm::vec3(red, green, blue));
 			break; 
 		case 7: 
-			mVertecies = con.Line(glm::vec3(red, green, blue));
+			mVertecies = con.Cubicinterpolation(glm::vec3(red, green, blue));
+			break;
+		case 8:
+			mVertecies = con.Quadraticinterpolation(glm::vec3(red, green, blue));
+			break;
+		case 9:
+			mVertecies = con.CoolPlane(glm::vec3(red, green, blue));
 			break;
 		default:
 			mVertecies = con.CubeNoTexture(glm::vec3(red, green, blue));
@@ -73,9 +81,11 @@ public:
 		VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		VAO1.Unbind();
 		VBO1.Unbind();
-		
-		size1 = scale; 
+
+		size1 = a; 
 		sphere_radius = a; 
+
+
 
 	}
 
@@ -85,14 +95,14 @@ public:
 	void UnbindVAO();
 	void BindVAO();
 	float GetA();
-	void UpdateVertices(float Xspeed, float Yspeed, float Zspeed, glm::vec3 velocity);
+	void UpdateVertices(float Xspeed, float Yspeed, float Zspeed);
 	VBO GetVBO();
 	void inputs(GLFWwindow* window);
 
 	void Patrol(std::vector<double> coefficients);
+	void Ai(glm::vec3 a, float maxX, float minX); 
 	
-	bool CheckCollision( Player& otherCube);
-	
+	bool SphereCollision( Player& otherCube);
 
 	glm::vec3 calculateBarycentricCoordinates( glm::vec3& cpoint, bool ground);
 

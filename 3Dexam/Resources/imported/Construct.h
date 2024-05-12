@@ -23,7 +23,9 @@ public:
 	std::vector<Vertex> NotAPlane(glm::vec3 Color);
 	std::vector<Vertex> Triangle(glm::vec3 Color);
 	std::vector<Vertex> Square(glm::vec3 Color);
-	std::vector<Vertex> Line(glm::vec3 Color);
+	std::vector<Vertex> Cubicinterpolation(glm::vec3 Color);
+	std::vector<Vertex> Quadraticinterpolation(glm::vec3 Color);
+	std::vector<Vertex> CoolPlane(glm::vec3 Color);
 
 
 	float randomFloat() {

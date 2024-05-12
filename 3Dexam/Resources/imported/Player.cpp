@@ -27,12 +27,23 @@ void Player::BindVAO()
 	VAO1.Bind();
 }
 
-void Player::UpdateVertices(float Xspeed, float Yspeed, float Zspeed, glm::vec3 velocity)
+void Player::UpdateVertices(float move_x, float move_y, float move_z)
 {
-	position.x += Xspeed;
-	position.y += Yspeed;
-	position.z += Zspeed;
+	// Create a speed vector based on input
+	glm::vec3 speed(move_x, move_y, move_z);
 
+	// Normalize only if the speed vector is non-zero so diagonal movement is not faster 
+	if (glm::length(speed) > 0.0f) {
+		speed = glm::normalize(speed);
+	}
+
+	speed *= speedMagnifier;
+
+	// Update position
+	position += speed;
+
+
+	//std::cout << glm::length(speed)<< std::endl;
 }
 
 VBO Player::GetVBO()
@@ -42,32 +53,36 @@ VBO Player::GetVBO()
 
 void Player::inputs(GLFWwindow* window)
 {
-	float speed = 0.1f;
-	float translationSpeed = speed;
+	float move_x = 0.0f;
+	float move_y = 0.0f;
+	float move_z = 0.0f;
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-
-		UpdateVertices(0, 0, -speed, glm::vec3(0, 0, 1));
-
+		move_z = -speedMagnifier;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-
-		UpdateVertices(0, 0, speed, glm::vec3(0, 0, 1));
+		move_z = speedMagnifier;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-
-		UpdateVertices(-speed, 0, 0, glm::vec3(1, 0, 0));
-
+		move_x = -speedMagnifier;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-
-		UpdateVertices(speed, 0, 0, glm::vec3(1, 0, 0));
+		move_x = speedMagnifier;
 	}
 
+	if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) ||
+		(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)) {
+		move_x = 0.0f;
+		move_y = 0.0f;
+		move_z = 0.0f;
+	}
+
+	UpdateVertices(move_x, move_y, move_z);
 }
 
 
 
-bool Player::CheckCollision( Player& otherCube)
+bool Player::SphereCollision( Player& otherCube)
 {
 	float distance_centers = glm::length(position - otherCube.position);
 
@@ -79,21 +94,19 @@ bool Player::CheckCollision( Player& otherCube)
 		position += dirvec * minimuntranslation;
 		//otherCube.position += dirvec * minimuntranslation;
 
-		otherCube.move = false;
+		//otherCube.move = false;
 		return true; 
 
 	}
 	else {
 
-		otherCube.move = true;
+		//otherCube.move = true;
 	}
 
 
 	// No collision detected
 	return false;
 }
-
-
 
 
 std::vector<double> computeDerivative(const std::vector<double>& coefficients) {
@@ -126,11 +139,10 @@ double computeDerivativeAtPoint(const std::vector<double>& coefficients, double 
 void Player::Patrol(std::vector<double> coefficients)
 {
 		double Derivative = computeDerivativeAtPoint(coefficients, xvalue) / 4096;
-		for (Vertex& vertex : mVertecies) {
 			position.x += xspeed / 2;
 			if (xPositiveDir) position.z += Derivative;
 			else position.z -= Derivative;
-		}
+
 		xvalue += xspeed;
 		if (xvalue >= 1) {
 			xspeed *= -1;
@@ -142,6 +154,30 @@ void Player::Patrol(std::vector<double> coefficients)
 		}
 }
 
+void Player::Ai(glm::vec3 a, float maxX, float minX) {
+	Math_class math; 
+
+	// worked on in with Hans before exam
+	glm::vec3 x_cords = { 0, 1, 2 };
+	glm::vec3 y_cords = { 0, 5, -4 };
+
+	glm::vec3 coeffients = math.QuadraticInterpolation(x_cords, y_cords);
+	bool positiveDirection = true;
+
+	// Update position based on the direction of motion
+	float stepSize = 0.01f;
+	position.x += stepSize * sign;
+	if (position.x > maxX) {
+		sign = -1;
+	}
+	if (position.x < minX) {
+		sign = 1;
+	}
+	position.z = coeffients.x * powf(position.x, 2) + coeffients.y * powf(position.x, 1) + coeffients.z;
+	//cout << "z Position " << position.z << endl;
+}
+
+
 
 glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& cpoint, bool ground)
 {
@@ -151,6 +187,7 @@ glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& cpoint, bool ground
 
 	for (int i = 0; i < mVertecies.size() - 2; i += 3)
 	{
+
 
 		glm::vec3 v0 = glm::vec3((mVertecies[i].x * size1) + position.x, (mVertecies[i].y * size1) + position.y, (mVertecies[i].z * size1) + position.z);
 		glm::vec3 v1 = glm::vec3((mVertecies[i + 1].x * size1) + position.x, (mVertecies[i + 1].y * size1) + position.y, (mVertecies[i + 1].z * size1) + position.z);
@@ -186,8 +223,9 @@ glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& cpoint, bool ground
 			if (ground)
 			{
 				float height = v0.y * u + v1.y * v + v2.y * w; // Pu * Qv * Rw = point
-				cpoint.y = height + 1; 
+				cpoint.y = height + 1.f; 
 			}
+			
 			else
 			{
 				cpoint.y += 1;

@@ -11,6 +11,16 @@ glm::vec<4, double> Math_class::CubicInterpolation(glm::vec4 x_Cords, glm::vec4 
     return (glm::inverse(A) * y_Cords);
 }
 
+glm::vec<3, double> Math_class::QuadraticInterpolation(glm::vec3 x_Cords, glm::vec3 y_Cords)
+{
+    glm::mat<3, 3, double> A(
+        powf(x_Cords.x, 2), powf(x_Cords.y, 2), powf(x_Cords.z, 2),
+        powf(x_Cords.x, 1), powf(x_Cords.y, 1), powf(x_Cords.z, 1),
+        powf(x_Cords.x, 0), powf(x_Cords.y, 0), powf(x_Cords.z, 0)
+    );
+    return (glm::inverse(A) * y_Cords);
+}
+
 void Math_class::WriteToFile(const char *name, float x, float y, float z)
 {
 

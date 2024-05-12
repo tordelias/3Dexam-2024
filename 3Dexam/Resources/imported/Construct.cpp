@@ -354,7 +354,7 @@ std::vector<Vertex> Construct::Square(glm::vec3 Color)
     return SquareArray;
 }
 
-std::vector<Vertex> Construct::Line(glm::vec3 Color)
+std::vector<Vertex> Construct::Cubicinterpolation(glm::vec3 Color)
 {
     Math_class math; 
     std::vector<Vertex> LineArray;
@@ -374,4 +374,94 @@ std::vector<Vertex> Construct::Line(glm::vec3 Color)
     }
     std::cout << X.x << ", " << X.y << ", " << X.z << ", " << X.w << std::endl;
     return LineArray;
+}
+
+std::vector<Vertex> Construct::Quadraticinterpolation(glm::vec3 Color)
+{
+    Math_class math;
+    std::vector<Vertex> LineArray;
+    glm::vec3 sizeXYZ = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    glm::vec3 points = { 0, 1, 2};
+    glm::vec3 y_cords = { 0, 5, -4};
+    float num_y;
+    glm::vec<3, double> X = math.QuadraticInterpolation(points, y_cords);
+    Vertex v0;
+    for (float i = 0; i < 10; i += 0.05)
+    {
+        num_y = ((X.x * powf(i, 3)) + (X.y * powf(i, 2)) + X.z);
+        v0 = { i, 0, num_y, Color.x, Color.y, Color.z };
+
+        std::cout << v0.x << ", " << v0.y << std::endl;
+        LineArray.push_back(v0);
+       
+        if (num_y < y_cords.z) // endre </> etter om posetiv/negativ 
+            return LineArray;
+    }
+    std::cout << X.x << ", " << X.y << ", " << X.z  << std::endl;
+
+    return LineArray; 
+}
+
+std::vector<Vertex> Construct::CoolPlane(glm::vec3 Color)
+{
+    std::vector<Vertex> TerrainArray;
+    glm::vec3 sizeXYZ = glm::vec3(10.0f, 1.0f, 10.0f); // Adjust the size of the terrain
+
+    int divisionsX = 50;
+    int divisionsZ = 50;
+
+    float stepX = sizeXYZ.x / divisionsX;
+    float stepZ = sizeXYZ.z / divisionsZ;
+
+    // Generate vertices
+    for (int i = 0; i < divisionsZ; ++i) {
+        for (int j = 0; j < divisionsX; ++j) {
+            Vertex v0, v1, v2, v3;
+
+            v0.x = j * stepX - sizeXYZ.x / 2.0f;
+            v0.z = i * stepZ - sizeXYZ.z / 2.0f;
+            v0.y = sin(v0.x * 0.5f) * cos(v0.z * 0.5f);
+
+            v1.x = (j + 1) * stepX - sizeXYZ.x / 2.0f;
+            v1.z = i * stepZ - sizeXYZ.z / 2.0f;
+            v1.y = sin(v1.x * 0.5f) * cos(v1.z * 0.5f);
+
+            v2.x = (j + 1) * stepX - sizeXYZ.x / 2.0f;
+            v2.z = (i + 1) * stepZ - sizeXYZ.z / 2.0f;
+            v2.y = sin(v2.x * 0.5f) * cos(v2.z * 0.5f);
+
+            v3.x = j * stepX - sizeXYZ.x / 2.0f;
+            v3.z = (i + 1) * stepZ - sizeXYZ.z / 2.0f;
+            v3.y = sin(v3.x * 0.5f) * cos(v3.z * 0.5f);
+
+            // Set color
+            v0.r = v1.r = v2.r = v3.r = Color.r;
+            v0.g = v1.g = v2.g = v3.g = Color.g;
+            v0.b = v1.b = v2.b = v3.b = Color.b;
+
+            // Set texture coordinates
+            v0.u = j / (float)divisionsX;
+            v0.v = i / (float)divisionsZ;
+
+            v1.u = (j + 1) / (float)divisionsX;
+            v1.v = i / (float)divisionsZ;
+
+            v2.u = (j + 1) / (float)divisionsX;
+            v2.v = (i + 1) / (float)divisionsZ;
+
+            v3.u = j / (float)divisionsX;
+            v3.v = (i + 1) / (float)divisionsZ;
+
+            TerrainArray.push_back(v0);
+            TerrainArray.push_back(v1);
+            TerrainArray.push_back(v2);
+
+            TerrainArray.push_back(v0);
+            TerrainArray.push_back(v2);
+            TerrainArray.push_back(v3);
+        }
+    }
+
+    return TerrainArray;
 }
