@@ -158,10 +158,11 @@ void Player::Ai(glm::vec3 a, float maxX, float minX) {
 	Math_class math; 
 
 	// worked on in with Hans before exam
-	glm::vec3 x_cords = { 0, 1, 2 };
-	glm::vec3 y_cords = { 0, 5, -4 };
+	//glm::vec3 x_cords = { 0, 1, 2 };
+	//glm::vec3 y_cords = { 0, 5, -4 };
 
-	glm::vec3 coeffients = math.QuadraticInterpolation(x_cords, y_cords);
+	//glm::vec3 coeffients = math.QuadraticInterpolation(x_cords, y_cords);
+	glm::vec3 coeffients = a; 
 	bool positiveDirection = true;
 
 	// Update position based on the direction of motion
